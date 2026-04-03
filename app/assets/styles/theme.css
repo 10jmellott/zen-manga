@@ -1,0 +1,59 @@
+/* Global Theme Variables */
+:root {
+    /* Fonts */
+    --font-stack: Montserrat, Arial, Helvetica, sans-serif;
+
+    /* Theme Colors */
+    --background: #dda15e;
+    --card-background: #bc6c25;
+    --foreground: #fefae0;
+    --primary: #606c38;
+    --secondary: #283618;
+
+    /* Animations */
+    --default-animation: 0.2s ease-in-out;
+
+    /* Spacing */
+    --content-width: 960px;
+    --spacing: 16px;
+    --inner-gap: 8px;
+    --padding: 8px;
+    --fullscreen-padding: 12px 16px;
+    --border-radius: 8px;
+
+    /* Tablet Spacing */
+    @media (min-width: 768px) {
+        --spacing: 16px;
+        --fullscreen-padding: 16px 24px;
+    }
+}
+
+/* Global Theme Styles */
+html,
+body,
+input,
+textarea,
+select,
+button {
+	font-display: auto;
+	font-family: var(--font-stack);
+}
+
+html, body {
+    background-color: var(--background);
+    color: var(--foreground);
+}
+
+a {
+	color: var(--foreground);
+    text-decoration: none;
+}
+
+strong,
+b {
+    font-weight: 700;
+}
+
+img {
+    display: block;
+}

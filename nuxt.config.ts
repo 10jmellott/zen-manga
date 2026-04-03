@@ -5,7 +5,7 @@ export default defineNuxtConfig({
   devServer: {
     port: 8086
   },
-  modules: ['@nuxt/icon', '@nuxt/fonts'],
+  modules: ['@nuxt/icon', '@nuxt/fonts', '@pinia/nuxt'],
   ssr: false,
   app: {
     baseURL: '/zen-manga/'
