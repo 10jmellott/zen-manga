@@ -1,0 +1,15 @@
+{
+  "permissions": {
+    "allow": [
+			"WebFetch(domain:nuxt.com)",
+      "WebFetch(domain:vuejs.org)",
+      "WebFetch(domain:pinia.vuejs.org)",
+			"WebFetch(domain:api.mangadex.org)",
+      "Read",
+      "Edit",
+      "Write",
+      "Glob",
+      "Grep"
+    ]
+  }
+}

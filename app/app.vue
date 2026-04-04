@@ -1,10 +1,15 @@
+<script lang="ts" setup>
+const route = useRoute();
+const isReaderPage = computed(() => route.path.includes('/chapter/'));
+</script>
+
 <template>
   <div class="app">
-    <LayoutHeader class="app__header" />
-    <main class="app__main">
-      <NuxtPage class="app__content" />
+    <LayoutHeader v-if="!isReaderPage" class="app__header" />
+    <main class="app__main" :class="{ 'app__main--reader': isReaderPage }">
+      <NuxtPage class="app__content" :class="{ 'app__content--reader': isReaderPage }" />
     </main>
-	<LayoutNavigation class="app__navigation" />
+    <LayoutNavigation v-if="!isReaderPage" class="app__navigation" />
   </div>
 </template>
 
@@ -18,9 +23,10 @@
 
 <style scoped>
 .app {
-  height: 100vh;
+  min-height: 100vh;
   display: flex;
   flex-direction: column;
+	position: relative;
 }
 
 .app__content {
@@ -28,8 +34,17 @@
   margin: 0 auto;
 }
 
+.app__content--reader {
+  max-width: none;
+  margin: 0;
+}
+
 .app__main {
   flex: 1;
   padding: var(--fullscreen-padding);
+}
+
+.app__main--reader {
+  padding: 0;
 }
 </style>
