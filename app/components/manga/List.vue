@@ -82,13 +82,8 @@ function readChapter(chapter: Chapter) {
     padding: var(--padding) var(--inner-gap);
     background-color: var(--card-background);
     border-radius: var(--border-radius-sm);
-    transition: background-color var(--default-animation);
     text-decoration: none;
     color: inherit;
-}
-
-.chapter-list__item:hover {
-    background-color: var(--background-hover);
 }
 
 .chapter-list__info {

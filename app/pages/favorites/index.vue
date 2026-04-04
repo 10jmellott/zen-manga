@@ -120,11 +120,6 @@ useHead({
     font-weight: 600;
     text-decoration: none;
     margin-top: var(--spacing);
-    transition: background-color var(--default-animation);
-}
-
-.explore-link:hover {
-    background-color: var(--primary-hover);
 }
 
 .favorites-page__grid {
@@ -191,11 +186,5 @@ useHead({
     justify-content: center;
     cursor: pointer;
     border: none;
-    transition: background-color var(--default-animation), transform var(--default-animation);
-}
-
-.favorite-card__remove:hover {
-    background-color: var(--error);
-    transform: scale(1.1);
 }
 </style>

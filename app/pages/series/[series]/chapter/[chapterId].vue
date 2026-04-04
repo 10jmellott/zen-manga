@@ -222,11 +222,6 @@ setTimeout(toggleControls, 2000); // Auto-hide controls after 2 seconds
     border-radius: 50%;
     background-color: var(--secondary);
     color: var(--foreground);
-    transition: background-color var(--default-animation);
-}
-
-.reader__back:hover {
-    background-color: var(--primary);
 }
 
 .reader__title-info {
@@ -297,11 +292,6 @@ setTimeout(toggleControls, 2000); // Auto-hide controls after 2 seconds
     font-size: 0.875rem;
     font-weight: 500;
     text-decoration: none;
-    transition: background-color var(--default-animation);
-}
-
-.reader__nav:hover:not(.reader__nav--disabled) {
-    background-color: var(--primary);
 }
 
 .reader__nav--disabled {
@@ -326,11 +316,6 @@ setTimeout(toggleControls, 2000); // Auto-hide controls after 2 seconds
     color: var(--foreground);
     cursor: pointer;
     border: none;
-    transition: background-color var(--default-animation);
-}
-
-.reader__page-btn:hover:not(:disabled) {
-    background-color: var(--primary);
 }
 
 .reader__page-btn:disabled {

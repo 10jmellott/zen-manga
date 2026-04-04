@@ -265,11 +265,6 @@ useHead(() => ({
     font-weight: 500;
     cursor: pointer;
     border: none;
-    transition: background-color var(--default-animation), color var(--default-animation);
-}
-
-.filter-chip:hover {
-    background-color: var(--background-hover);
 }
 
 .filter-chip--active {
@@ -310,11 +305,6 @@ useHead(() => ({
     font-weight: 600;
     cursor: pointer;
     border: none;
-    transition: background-color var(--default-animation);
-}
-
-.load-more-btn:hover:not(:disabled) {
-    background-color: var(--primary-hover);
 }
 
 .load-more-btn:disabled {

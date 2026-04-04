@@ -65,21 +65,11 @@ function isActive(to: string) {
     border-radius: var(--border-radius);
     text-decoration: none;
     color: var(--foreground-muted);
-    transition: color var(--default-animation), background-color var(--default-animation);
     position: relative;
     min-width: 70px;
 }
 
-.navigation__item:hover {
-    color: var(--foreground);
-    background-color: var(--background-hover);
-}
-
 .navigation__item--active {
-    color: var(--primary);
-}
-
-.navigation__item--active:hover {
     color: var(--primary);
 }
 

@@ -69,12 +69,6 @@ function handleKeydown(e: KeyboardEvent) {
     justify-content: center;
     cursor: pointer;
     border: none;
-    transition: background-color var(--default-animation), color var(--default-animation);
-}
-
-.search-bar__toggle:hover {
-    background-color: var(--background-hover);
-    color: var(--primary);
 }
 
 .search-bar__input {

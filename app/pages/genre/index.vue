@@ -87,12 +87,6 @@ useHead({
     border-radius: var(--border-radius);
     text-decoration: none;
     color: var(--foreground);
-    transition: background-color var(--default-animation), transform var(--default-animation);
-}
-
-.genre-card:hover {
-    background-color: var(--background-hover);
-    transform: translateX(4px);
 }
 
 .genre-card__name {

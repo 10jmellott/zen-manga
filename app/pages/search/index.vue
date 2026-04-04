@@ -251,11 +251,6 @@ onMounted(() => {
     justify-content: center;
     cursor: pointer;
     border: none;
-    transition: background-color var(--default-animation);
-}
-
-.search-page__submit:hover {
-    background-color: var(--primary-hover);
 }
 
 .search-page__filters {
@@ -306,11 +301,6 @@ onMounted(() => {
     font-weight: 500;
     cursor: pointer;
     border: none;
-    transition: background-color var(--default-animation), color var(--default-animation);
-}
-
-.filter-chip:hover {
-    background-color: var(--background-hover);
 }
 
 .filter-chip--active {
@@ -329,12 +319,7 @@ onMounted(() => {
     font-size: 0.875rem;
     cursor: pointer;
     border: none;
-    transition: color var(--default-animation);
     align-self: flex-end;
-}
-
-.filter-clear:hover {
-    color: var(--error);
 }
 
 .search-page__results {

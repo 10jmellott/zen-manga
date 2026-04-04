@@ -44,12 +44,7 @@ function removeFromHistory(e: Event) {
     border-radius: var(--border-radius);
     text-decoration: none;
     color: inherit;
-    transition: background-color var(--default-animation);
     position: relative;
-}
-
-.continue-card:hover {
-    background-color: var(--background-hover);
 }
 
 .continue-card__cover {
@@ -109,17 +104,7 @@ function removeFromHistory(e: Event) {
     display: flex;
     align-items: center;
     justify-content: center;
-    opacity: 0;
-    transition: opacity var(--default-animation), background-color var(--default-animation);
     cursor: pointer;
     border: none;
-}
-
-.continue-card:hover .continue-card__remove {
-    opacity: 1;
-}
-
-.continue-card__remove:hover {
-    background-color: var(--error);
 }
 </style>

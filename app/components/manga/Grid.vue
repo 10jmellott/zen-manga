@@ -52,11 +52,6 @@ defineProps<Props>();
     color: var(--primary);
     font-size: 0.875rem;
     font-weight: 500;
-    transition: color var(--default-animation);
-}
-
-.manga-grid__view-all:hover {
-    color: var(--primary-hover);
 }
 
 .manga-grid__items {

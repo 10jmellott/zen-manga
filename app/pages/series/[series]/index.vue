@@ -372,17 +372,12 @@ useHead(() => ({
     font-weight: 600;
     cursor: pointer;
     border: none;
-    transition: background-color var(--default-animation);
     text-decoration: none;
 }
 
 .action-btn--favorite {
     background-color: var(--secondary);
     color: var(--foreground);
-}
-
-.action-btn--favorite:hover {
-    background-color: var(--background-hover);
 }
 
 .action-btn--favorite.action-btn--active {
@@ -393,10 +388,6 @@ useHead(() => ({
 .action-btn--read {
     background-color: var(--primary);
     color: white;
-}
-
-.action-btn--read:hover {
-    background-color: var(--primary-hover);
 }
 
 .series-page__chapters {
@@ -452,13 +443,8 @@ useHead(() => ({
     padding: var(--padding) var(--inner-gap);
     background-color: var(--card-background);
     border-radius: var(--border-radius-sm);
-    transition: background-color var(--default-animation);
     text-decoration: none;
     color: inherit;
-}
-
-.chapter-item:hover {
-    background-color: var(--background-hover);
 }
 
 .chapter-item__info {
@@ -511,11 +497,6 @@ useHead(() => ({
     font-weight: 600;
     cursor: pointer;
     border: none;
-    transition: background-color var(--default-animation);
-}
-
-.load-more-btn:hover:not(:disabled) {
-    background-color: var(--primary-hover);
 }
 
 .load-more-btn:disabled {

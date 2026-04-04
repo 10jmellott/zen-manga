@@ -42,14 +42,6 @@ function toggleFavorite(e: Event) {
     <NuxtLink :to="`/series/${manga.id}`" class="manga-card" :class="sizeClasses">
         <div class="manga-card__cover">
             <img :src="coverUrl" :alt="title" loading="lazy" />
-            <button
-                class="manga-card__favorite"
-                :class="{ 'manga-card__favorite--active': isFavorite }"
-                @click="toggleFavorite"
-                :aria-label="isFavorite ? 'Remove from favorites' : 'Add to favorites'"
-            >
-                <Icon :name="isFavorite ? 'mdi:heart' : 'mdi:heart-outline'" />
-            </button>
         </div>
         <div class="manga-card__info">
             <h3 class="manga-card__title">{{ title }}</h3>
@@ -65,14 +57,8 @@ function toggleFavorite(e: Event) {
     border-radius: var(--border-radius);
     overflow: hidden;
     background-color: var(--card-background);
-    transition: transform var(--default-animation), box-shadow var(--default-animation);
     text-decoration: none;
     color: inherit;
-}
-
-.manga-card:hover {
-    transform: translateY(-4px);
-    box-shadow: var(--shadow-lg);
 }
 
 .manga-card__cover {
@@ -86,46 +72,6 @@ function toggleFavorite(e: Event) {
     width: 100%;
     height: 100%;
     object-fit: cover;
-    transition: transform var(--transition-slow);
-}
-
-.manga-card:hover .manga-card__cover img {
-    transform: scale(1.05);
-}
-
-.manga-card__favorite {
-    position: absolute;
-    top: 8px;
-    right: 8px;
-    width: 36px;
-    height: 36px;
-    border-radius: 50%;
-    background-color: rgba(0, 0, 0, 0.6);
-    color: white;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    opacity: 0;
-    transition: opacity var(--default-animation), background-color var(--default-animation);
-    cursor: pointer;
-    border: none;
-}
-
-.manga-card:hover .manga-card__favorite {
-    opacity: 1;
-}
-
-.manga-card__favorite:hover {
-    background-color: var(--primary);
-}
-
-.manga-card__favorite--active {
-    opacity: 1;
-    color: var(--primary);
-}
-
-.manga-card__favorite--active:hover {
-    color: white;
 }
 
 .manga-card__info {
