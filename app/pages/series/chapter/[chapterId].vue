@@ -73,7 +73,7 @@ async function loadChapter() {
         serverData.value = serverResponse;
 
         pages.value = serverResponse.chapter.dataSaver.map(
-            (file) => `${serverResponse.baseUrl}/data-saver/${serverResponse.chapter.hash}/${file}`
+            (file) => `https://corsproxy.10jmellott.workers.dev/?url=${encodeURIComponent(`${serverResponse.baseUrl}/data-saver/${serverResponse.chapter.hash}/${file}`)}`
         );
     } catch (err) {
         console.error('Failed to load chapter:', err);

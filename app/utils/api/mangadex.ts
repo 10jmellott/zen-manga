@@ -28,7 +28,7 @@ function getImageUrl(mangaId: string, cover: CoverAttributes | undefined, size: 
     if (!cover?.fileName) {
         return `https://via.placeholder.com/${size === '256' ? '256x384' : '512x768'}/1a1a1a/666666?text=No+Cover`;
     }
-    return `https://uploads.mangadex.org/covers/${mangaId}/${cover.fileName}.${size}.jpg`;
+    return proxyUrl(`https://uploads.mangadex.org/covers/${mangaId}/${cover.fileName}.${size}.jpg`);
 }
 
 function getRelationship<T extends { id: string; type: string; attributes?: Record<string, unknown> }>(
