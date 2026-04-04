@@ -1,6 +1,6 @@
 <script lang="ts" setup>
 import type { Manga, Tag } from '~/types/mangadex';
-import { searchManga, getTags, getEnglishTitle } from '~/utils/api/mangadex';
+import { searchManga, getTags } from '~/utils/api/mangadex';
 
 const route = useRoute();
 const router = useRouter();
@@ -10,9 +10,11 @@ const results = ref<Manga[]>([]);
 const tags = ref<Tag[]>([]);
 const selectedTags = ref<string[]>([]);
 const selectedStatus = ref<string[]>([]);
-const sortBy = ref<string>('relevance');
+const sortBy = ref<string>('latestUploadedChapter');
 const loading = ref(false);
 const hasSearched = ref(false);
+const showFilters = ref(false);
+const currentSortLabel = ref('Latest Updates');
 
 const statusOptions = [
     { value: 'ongoing', label: 'Ongoing' },
@@ -22,31 +24,41 @@ const statusOptions = [
 ];
 
 const sortOptions = [
-    { value: 'relevance', label: 'Relevance' },
-    { value: 'latestUploadedChapter', label: 'Latest Uploaded' },
-    { value: 'title', label: 'Title' },
-    { value: 'createdAt', label: 'Date Added' },
+    { value: 'latestUploadedChapter', label: 'Latest Updates' },
+    { value: 'followedCount', label: 'Most Popular' },
+    { value: 'relevance', label: 'Browse All' },
+    { value: 'title', label: 'Title A-Z' },
+    { value: 'createdAt', label: 'Newest Added' },
 ];
 
-async function performSearch() {
-    if (!searchQuery.value.trim() && selectedTags.value.length === 0) {
-        results.value = [];
-        return;
-    }
+const sortLabelMap: Record<string, string> = {
+    trending: 'Trending',
+    latest: 'Latest Updates',
+    popular: 'Most Popular',
+};
 
+async function performSearch(overrideQuery?: string) {
     loading.value = true;
     hasSearched.value = true;
 
+    const query = overrideQuery !== undefined ? overrideQuery : searchQuery.value;
+
     try {
+        const orderMap: Record<string, Record<string, string>> = {
+            relevance: {},
+            followedCount: { followedCount: 'desc' },
+            latestUploadedChapter: { latestUploadedChapter: 'desc' },
+            title: { title: 'asc' },
+            createdAt: { createdAt: 'desc' },
+        };
+
         const response = await searchManga({
-            title: searchQuery.value.trim() || undefined,
+            title: query.trim() || undefined,
             includedTags: selectedTags.value.length > 0 ? selectedTags.value : undefined,
             status: selectedStatus.value.length > 0 ? selectedStatus.value : undefined,
             contentRating: ['safe', 'suggestive'],
-            limit: 20,
-            order: {
-                [sortBy.value]: 'desc',
-            },
+            limit: 40,
+            order: orderMap[sortBy.value] || {},
         });
         results.value = response.data;
     } catch (error) {
@@ -87,42 +99,58 @@ function toggleStatus(status: string) {
 }
 
 function handleSortChange() {
-    if (hasSearched.value) {
-        performSearch();
-    }
+    const option = sortOptions.find(o => o.value === sortBy.value);
+    currentSortLabel.value = option?.label || 'Browse All';
+    performSearch();
 }
 
 function clearFilters() {
     selectedTags.value = [];
     selectedStatus.value = [];
     sortBy.value = 'relevance';
+    currentSortLabel.value = 'Browse All';
     performSearch();
 }
 
 function handleSearch() {
-    router.replace({ query: { q: searchQuery.value } });
+    router.replace({ query: { q: searchQuery.value, sort: sortBy.value } });
     performSearch();
+}
+
+function handleSortFromQuery(sortValue: string) {
+    if (sortValue && sortLabelMap[sortValue]) {
+        sortBy.value = sortValue === 'latest' ? 'latestUploadedChapter' 
+                      : sortValue === 'popular' ? 'followedCount' 
+                      : sortValue === 'trending' ? 'followedCount' 
+                      : 'relevance';
+        currentSortLabel.value = sortLabelMap[sortValue];
+    }
 }
 
 watch(() => route.query.q, (newQuery) => {
     searchQuery.value = (newQuery as string) || '';
-    if (searchQuery.value) {
+});
+
+watch(() => route.query.sort, (newSort) => {
+    if (newSort) {
+        handleSortFromQuery(newSort as string);
         performSearch();
     }
-});
+}, { immediate: true });
 
 onMounted(() => {
     loadTags();
-    if (searchQuery.value) {
-        performSearch();
+    if (route.query.sort) {
+        handleSortFromQuery(route.query.sort as string);
     }
+    performSearch();
 });
 </script>
 
 <template>
     <div class="search-page">
         <div class="search-page__header">
-            <h1 class="search-page__title">Search</h1>
+            <h1 class="search-page__title">{{ currentSortLabel }}</h1>
             <div class="search-page__form">
                 <input
                     v-model="searchQuery"
@@ -137,16 +165,18 @@ onMounted(() => {
             </div>
         </div>
 
-        <div class="search-page__filters">
-            <div class="filter-group">
-                <label class="filter-group__label">Sort by</label>
-                <select v-model="sortBy" class="filter-group__select" @change="handleSortChange">
-                    <option v-for="option in sortOptions" :key="option.value" :value="option.value">
-                        {{ option.label }}
-                    </option>
-                </select>
-            </div>
+        <div class="search-page__controls">
+            <select v-model="sortBy" class="search-page__sort" @change="handleSortChange">
+                <option v-for="option in sortOptions" :key="option.value" :value="option.value">
+                    {{ option.label }}
+                </option>
+            </select>
+            <button class="search-page__toggle-filters" @click="showFilters = !showFilters">
+                <Icon :name="showFilters ? 'mdi:filter-off' : 'mdi:filter-variant'" />
+            </button>
+        </div>
 
+        <div v-if="showFilters" class="search-page__filters">
             <div class="filter-group">
                 <label class="filter-group__label">Status</label>
                 <div class="filter-group__options">
@@ -171,17 +201,17 @@ onMounted(() => {
         <div class="search-page__results">
             <div v-if="loading" class="search-page__loading">
                 <UiLoadingSpinner size="large" />
-                <p>Searching...</p>
+                <p>Loading...</p>
             </div>
 
             <div v-else-if="!hasSearched" class="search-page__empty">
                 <Icon name="mdi:magnify" size="64" />
-                <p>Start typing to search for manga</p>
+                <p>Search or browse manga</p>
             </div>
 
             <div v-else-if="results.length === 0" class="search-page__empty">
                 <Icon name="mdi:book-off-outline" size="64" />
-                <p>No manga found matching your search</p>
+                <p>No manga found</p>
                 <p class="search-page__hint">Try different keywords or adjust your filters</p>
             </div>
 
@@ -191,6 +221,8 @@ onMounted(() => {
                     :key="manga.id"
                     :manga="manga"
                     show-status
+                    show-details
+                    horizontal
                 />
             </div>
         </div>
@@ -253,6 +285,37 @@ onMounted(() => {
     border: none;
 }
 
+.search-page__controls {
+    display: flex;
+    gap: var(--inner-gap);
+}
+
+.search-page__sort {
+    flex: 1;
+    padding: 10px 12px;
+    background-color: var(--card-background);
+    border: 1px solid var(--border);
+    border-radius: var(--border-radius);
+    color: var(--foreground);
+    font-size: 0.875rem;
+    outline: none;
+    cursor: pointer;
+}
+
+.search-page__toggle-filters {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 10px 16px;
+    background-color: var(--secondary);
+    color: var(--foreground);
+    border-radius: var(--border-radius);
+    font-size: 0.875rem;
+    font-weight: 500;
+    cursor: pointer;
+    border: none;
+}
+
 .search-page__filters {
     display: flex;
     flex-wrap: wrap;
@@ -275,17 +338,6 @@ onMounted(() => {
     text-transform: uppercase;
 }
 
-.filter-group__select {
-    padding: 8px 12px;
-    background-color: var(--background);
-    border: 1px solid var(--border);
-    border-radius: var(--border-radius-sm);
-    color: var(--foreground);
-    font-size: 0.875rem;
-    outline: none;
-    cursor: pointer;
-}
-
 .filter-group__options {
     display: flex;
     flex-wrap: wrap;
@@ -294,18 +346,19 @@ onMounted(() => {
 
 .filter-chip {
     padding: 6px 12px;
-    background-color: var(--secondary);
+    background-color: var(--background);
     color: var(--foreground);
     border-radius: 16px;
     font-size: 0.75rem;
     font-weight: 500;
     cursor: pointer;
-    border: none;
+    border: 1px solid var(--border);
 }
 
 .filter-chip--active {
     background-color: var(--primary);
     color: white;
+    border-color: var(--primary);
 }
 
 .filter-clear {
@@ -343,9 +396,17 @@ onMounted(() => {
 }
 
 .search-page__grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
-    gap: var(--spacing);
+    display: flex;
+    flex-direction: column;
+    gap: var(--inner-gap);
+}
+
+@media (min-width: 640px) {
+    .search-page__grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+        gap: var(--spacing);
+    }
 }
 
 @media (min-width: 768px) {

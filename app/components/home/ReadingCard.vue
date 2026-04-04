@@ -6,13 +6,6 @@ interface Props {
 }
 
 defineProps<Props>();
-const mangaStore = useMangaStore();
-
-function removeFromHistory(e: Event) {
-    e.preventDefault();
-    e.stopPropagation();
-    mangaStore.removeFromContinueReading(e.currentTarget as HTMLElement);
-}
 </script>
 
 <template>
@@ -25,14 +18,7 @@ function removeFromHistory(e: Event) {
             <span class="continue-card__chapter">
                 {{ reading.chapterNumber }}{{ reading.chapterTitle ? ` - ${reading.chapterTitle}` : '' }}
             </span>
-            <span class="continue-card__action">
-                <Icon name="mdi:book-open-page-variant" />
-                Continue Reading
-            </span>
         </div>
-        <button class="continue-card__remove" @click="removeFromHistory" aria-label="Remove from history">
-            <Icon name="mdi:close" />
-        </button>
     </NuxtLink>
 </template>
 
@@ -44,12 +30,12 @@ function removeFromHistory(e: Event) {
     border-radius: var(--border-radius);
     text-decoration: none;
     color: inherit;
-    position: relative;
+    min-width: 200px;
 }
 
 .continue-card__cover {
-    width: 80px;
-    height: 110px;
+    width: 60px;
+    height: 85px;
     border-radius: var(--border-radius-sm);
     overflow: hidden;
     flex-shrink: 0;
@@ -67,10 +53,11 @@ function removeFromHistory(e: Event) {
     justify-content: center;
     gap: 4px;
     min-width: 0;
+    flex: 1;
 }
 
 .continue-card__title {
-    font-size: 1rem;
+    font-size: 0.875rem;
     font-weight: 600;
     display: -webkit-box;
     -webkit-line-clamp: 2;
@@ -79,32 +66,7 @@ function removeFromHistory(e: Event) {
 }
 
 .continue-card__chapter {
-    font-size: 0.875rem;
-    color: var(--primary);
-}
-
-.continue-card__action {
-    display: flex;
-    align-items: center;
-    gap: 4px;
     font-size: 0.75rem;
-    color: var(--foreground-muted);
-    margin-top: 4px;
-}
-
-.continue-card__remove {
-    position: absolute;
-    top: 8px;
-    right: 8px;
-    width: 28px;
-    height: 28px;
-    border-radius: 50%;
-    background-color: rgba(0, 0, 0, 0.5);
-    color: white;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    cursor: pointer;
-    border: none;
+    color: var(--primary);
 }
 </style>

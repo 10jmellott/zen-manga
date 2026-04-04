@@ -58,10 +58,12 @@ defineProps<Props>();
     display: flex;
     gap: var(--spacing);
     overflow-x: auto;
-    scroll-snap-type: x mandatory;
     scrollbar-width: none;
     -ms-overflow-style: none;
     padding-bottom: var(--inner-gap);
+    padding-left: 16px;
+    padding-right: 16px;
+    margin: 0 -16px;
 }
 
 .manga-grid__items::-webkit-scrollbar {
@@ -71,7 +73,6 @@ defineProps<Props>();
 .manga-grid__items > * {
     flex-shrink: 0;
     width: 140px;
-    scroll-snap-align: start;
 }
 
 .manga-grid__loading {
@@ -106,12 +107,10 @@ defineProps<Props>();
         display: grid;
         grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
         overflow-x: visible;
-        scroll-snap-type: none;
     }
 
     .manga-grid__items > * {
         width: auto;
-        scroll-snap-align: none;
     }
 }
 </style>

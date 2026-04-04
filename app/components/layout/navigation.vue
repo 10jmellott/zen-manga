@@ -1,6 +1,4 @@
 <script lang="ts" setup>
-const mangaStore = useMangaStore();
-
 const navItems = [
     { to: '/', icon: 'mdi:home-outline', label: 'Home' },
     { to: '/search', icon: 'mdi:magnify', label: 'Search' },
@@ -28,9 +26,6 @@ function isActive(to: string) {
             >
                 <Icon :name="item.icon" class="navigation__icon" />
                 <span class="navigation__label">{{ item.label }}</span>
-                <span v-if="item.to === '/favorites' && mangaStore.favoriteCount > 0" class="navigation__badge">
-                    {{ mangaStore.favoriteCount }}
-                </span>
             </NuxtLink>
         </div>
     </nav>
@@ -65,7 +60,6 @@ function isActive(to: string) {
     border-radius: var(--border-radius);
     text-decoration: none;
     color: var(--foreground-muted);
-    position: relative;
     min-width: 70px;
 }
 
@@ -80,22 +74,5 @@ function isActive(to: string) {
 .navigation__label {
     font-size: 0.75rem;
     font-weight: 500;
-}
-
-.navigation__badge {
-    position: absolute;
-    top: 2px;
-    right: 8px;
-    min-width: 18px;
-    height: 18px;
-    padding: 0 5px;
-    background-color: var(--primary);
-    color: white;
-    font-size: 0.625rem;
-    font-weight: 700;
-    border-radius: 9px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
 }
 </style>
