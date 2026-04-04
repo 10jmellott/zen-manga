@@ -18,6 +18,11 @@ import type {
 } from '~/types/mangadex';
 
 const BASE_URL = 'https://api.mangadex.org';
+const CORS_PROXY = 'https://corsproxy.10jmellott.workers.dev/?url=';
+
+function proxyUrl(url: string): string {
+    return `${CORS_PROXY}${encodeURIComponent(url)}`;
+}
 
 function getImageUrl(mangaId: string, cover: CoverAttributes | undefined, size: '256' | '512' | 'original' = '256'): string {
     if (!cover?.fileName) {
@@ -54,7 +59,7 @@ async function fetchWithTimeout<T>(url: string, options: RequestInit = {}, timeo
     const timeoutId = setTimeout(() => controller.abort(), timeout);
 
     try {
-        const response = await fetch(url, {
+        const response = await fetch(proxyUrl(url), {
             ...options,
             signal: controller.signal,
         });
@@ -221,11 +226,10 @@ export async function getAuthorById(authorId: string): Promise<{ result: string;
 }
 
 export async function getMangaByAuthor(authorId: string): Promise<MangaListResponse> {
-    const params = new URLSearchParams({
-        authors: authorId,
-        includes: 'cover_art',
-        limit: '10',
-    });
+    const params = new URLSearchParams();
+    params.set('authors', authorId);
+    params.append('includes[]', 'cover_art');
+    params.set('limit', '10');
 
     return fetchWithTimeout<MangaListResponse>(
         `${BASE_URL}/manga?${params.toString()}`
