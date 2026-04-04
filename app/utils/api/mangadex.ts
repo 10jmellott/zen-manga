@@ -81,7 +81,8 @@ export async function getTrendingManga(limit = 10): Promise<Manga[]> {
     params.append('includes[]', 'author');
     params.append('includes[]', 'artist');
     params.set('order[followedCount]', 'desc');
-    params.append('contentRating[]', 'safe,suggestive');
+    params.append('contentRating[]', 'safe');
+	params.append('contentRating[]', 'suggestive');
 
     const data = await fetchWithTimeout<MangaListResponse>(
         `${BASE_URL}/manga?${params.toString()}`
@@ -96,7 +97,8 @@ export async function getLatestManga(limit = 20): Promise<Manga[]> {
     params.append('includes[]', 'author');
     params.append('includes[]', 'artist');
     params.set('order[latestUploadedChapter]', 'desc');
-    params.append('contentRating[]', 'safe,suggestive');
+    params.append('contentRating[]', 'safe');
+	params.append('contentRating[]', 'suggestive');
 
     const data = await fetchWithTimeout<MangaListResponse>(
         `${BASE_URL}/manga?${params.toString()}`
@@ -111,7 +113,8 @@ export async function getPopularManga(limit = 20): Promise<Manga[]> {
     params.append('includes[]', 'author');
     params.append('includes[]', 'artist');
     params.set('order[relevance]', 'desc');
-    params.append('contentRating[]', 'safe,suggestive');
+    params.append('contentRating[]', 'safe');
+	params.append('contentRating[]', 'suggestive');
 
     const data = await fetchWithTimeout<MangaListResponse>(
         `${BASE_URL}/manga?${params.toString()}`
