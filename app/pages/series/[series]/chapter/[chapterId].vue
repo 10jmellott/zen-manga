@@ -4,6 +4,7 @@ import {
     getChapterById,
     getChapterPages,
     getMangaById,
+    getMangaChapters,
     getCoverUrl,
     getMangaTitle,
     getChapterNumber,
@@ -65,6 +66,17 @@ async function loadChapter() {
             chapter.value.attributes.chapter || '0',
             chapter.value.attributes.title || ''
         );
+
+        if (mangaStore.currentChapters.length === 0 || mangaStore.currentSeries?.id !== seriesId.value) {
+            const chaptersResponse = await getMangaChapters(seriesId.value, {
+                translatedLanguage: ['en'],
+                limit: 100,
+                order: {
+                    chapter: 'desc',
+                },
+            });
+            mangaStore.setCurrentChapters(chaptersResponse.data);
+        }
 
         const serverResponse = await getChapterPages(chapterId.value);
         serverData.value = serverResponse;
