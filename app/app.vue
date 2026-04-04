@@ -5,6 +5,7 @@ const isReaderPage = computed(() => route.path.includes('/chapter/'));
 
 <template>
   <div class="app">
+		<NuxtPwaManifest />
     <LayoutHeader v-if="!isReaderPage" class="app__header" />
     <main class="app__main" :class="{ 'app__main--reader': isReaderPage }">
       <NuxtPage class="app__content" :class="{ 'app__content--reader': isReaderPage }" />
