@@ -1,51 +1,57 @@
 <script lang="ts" setup>
-const route = useRoute();
-const isReaderPage = computed(() => route.path.includes('/chapter/'));
+const layoutStore = useLayoutStore();
 </script>
 
 <template>
-  <div class="app">
-		<NuxtPwaManifest />
-    <LayoutHeader v-if="!isReaderPage" class="app__header" />
-    <main class="app__main" :class="{ 'app__main--reader': isReaderPage }">
-      <NuxtPage class="app__content" :class="{ 'app__content--reader': isReaderPage }" />
-    </main>
-    <LayoutNavigation v-if="!isReaderPage" class="app__navigation" />
-  </div>
+	<div class="app">
+		<LayoutHeader class="header" :class="{ visible: layoutStore.showHeader }" />
+		<main class="content" :class="{ padded: layoutStore.addContentPadding }">
+			<NuxtPage />
+		</main>
+		<LayoutNavigation class="navigation"  :class="{ visible: layoutStore.showNavigation }" />
+	</div>
 </template>
 
 <style>
 /* Global styles for the app */
 @import '@/assets/styles/reset.css';
-@import '@/assets/styles/colors.css';
 @import '@/assets/styles/theme.css';
 @import '@/assets/styles/typography.css';
 </style>
 
 <style scoped>
 .app {
-  min-height: 100vh;
-  display: flex;
-  flex-direction: column;
 	position: relative;
+	display: flex;
+	flex-direction: column;
+	min-height: 100vh;
 }
-
-.app__content {
-  max-width: var(--content-width);
-  margin: 0 auto;
+.content {
+	max-width: var(--content-width);
+	flex-grow: 1;
+	margin: 0 auto;
+	width: 100%;
 }
-
-.app__content--reader {
-  max-width: none;
-  margin: 0;
+.padded {
+	margin: var(--padding);
+	width: calc(100% - var(--padding) * 2);
 }
-
-.app__main {
-  flex: 1;
-  padding: var(--fullscreen-padding);
+.header,
+.navigation {
+	position: sticky;
+	z-index: 5;
+	opacity: 0;
+	transition: opacity 0.3s ease;
+	pointer-events: none;
 }
-
-.app__main--reader {
-  padding: 0;
+.header {
+	top: 0;
+}
+.navigation {
+	bottom: 0;
+}
+.visible {
+	opacity: 1;
+	pointer-events: all;
 }
 </style>

@@ -1,78 +1,50 @@
 <script lang="ts" setup>
-const navItems = [
-    { to: '/', icon: 'mdi:home-outline', label: 'Home' },
-    { to: '/search', icon: 'mdi:magnify', label: 'Search' },
-    { to: '/favorites', icon: 'mdi:heart-outline', label: 'Favorites' },
-];
-
+const store = useMangaStore();
 const route = useRoute();
-function isActive(to: string) {
-    if (to === '/') {
-        return route.path === '/';
-    }
-    return route.path.startsWith(to);
+
+function getChapterByOffset(offset: number) {
+	if (!route.params.chapter || !store.currentManga?.chapters) return null;
+	const chapterId = route.params.chapter as string;
+	const chapter = store.currentManga.chapters.find(c => c.id === chapterId);
+	if (!chapter) return null;
+	const currentChapterNumber = chapter.chapter;
+	const targetChapterNumber = currentChapterNumber + offset;
+	const targetChapter = store.currentManga.chapters.filter(c => c.chapter === targetChapterNumber);
+	if (targetChapter.length > 1) {
+		// Try to match the current scanlation group if there are multiple chapters with the same chapter number
+		const currentScanlationGroup = chapter.scanlationGroup;
+		const matchingChapter = targetChapter.find(c => c.scanlationGroup === currentScanlationGroup);
+		if (matchingChapter) {
+			return matchingChapter;
+		}
+	}
+	return targetChapter[0] ?? null;
 }
+
+const nextChapter = computed(() => getChapterByOffset(1));
 </script>
 
 <template>
-    <nav class="navigation">
-        <div class="navigation__container">
-            <NuxtLink
-                v-for="item in navItems"
-                :key="item.to"
-                :to="item.to"
-                class="navigation__item"
-                :class="{ 'navigation__item--active': isActive(item.to) }"
-            >
-                <Icon :name="item.icon" class="navigation__icon" />
-                <span class="navigation__label">{{ item.label }}</span>
-            </NuxtLink>
-        </div>
-    </nav>
+    <div class="navigation glass">
+		<NuxtLink v-if="nextChapter" :to="`/${store.currentManga?.id}/${nextChapter?.id}`" class="chapter-link">
+			Chapter {{ nextChapter?.chapter ?? '-' }}
+			<Icon name="mdi:arrow-right" />
+		</NuxtLink>
+	</div>
 </template>
 
 <style scoped>
 .navigation {
-    background: rgba(15, 15, 15, 0.8);
-    backdrop-filter: blur(10px);
-    -webkit-backdrop-filter: blur(10px);
-    padding: var(--padding) var(--spacing);
-    border-top: 1px solid var(--border);
-    position: sticky;
-    bottom: 0;
-    z-index: 100;
+	padding-bottom: 0;
+    padding-bottom: env(safe-area-inset-bottom, 0);
 }
-
-.navigation__container {
-    display: flex;
-    justify-content: space-around;
-    align-items: center;
-    max-width: var(--content-width);
-    margin: 0 auto;
-}
-
-.navigation__item {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 4px;
-    padding: 8px 16px;
-    border-radius: var(--border-radius);
-    text-decoration: none;
-    color: var(--foreground-muted);
-    min-width: 70px;
-}
-
-.navigation__item--active {
-    color: var(--primary);
-}
-
-.navigation__icon {
-    font-size: 24px;
-}
-
-.navigation__label {
-    font-size: 0.75rem;
-    font-weight: 500;
+.chapter-link {
+	flex-grow: 1;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	color: var(--primary);
+	gap: var(--padding);
+	padding: var(--spacing);
 }
 </style>

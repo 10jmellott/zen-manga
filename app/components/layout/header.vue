@@ -1,52 +1,70 @@
 <script lang="ts" setup>
+const layoutStore = useLayoutStore()
+const store = useMangaStore();
+const route = useRoute();
+const currentChapter = computed(() => {
+	return store.currentManga?.chapters?.find(c => c.id === route.params.chapter);
+});
 </script>
 
 <template>
-    <header class="header">
-        <div class="header__container">
-            <NuxtLink to="/" class="header__brand">
-                <Icon name="mdi:book-open-blank-variant" class="header__icon" />
-                <span class="header__title">Zen Manga</span>
-            </NuxtLink>
-        </div>
-    </header>
+    <div class="header glass fade-animation" :class="{ fade: layoutStore.showHeader }">
+		<div class="chapter-header" v-if="currentChapter">
+			<NuxtLink :to="`/${store.currentManga?.id}`" class="back-link">
+				<Icon name="mdi:arrow-left" />
+			</NuxtLink>
+			<span class="chapter-number caption1">Ch. {{ currentChapter.chapter }}</span>
+			<span class="chapter-title body1" :class="{ muted: !currentChapter.title }">{{ currentChapter.title ?? 'Untitled' }}</span>
+		</div>
+		<NuxtLink to="/" class="header__inner" v-else>
+			<IconsLogo height="32" width="32" />
+			<h1>Zen Manga</h1>
+		</NuxtLink>
+	</div>
 </template>
 
 <style scoped>
 .header {
-    background: rgba(15, 15, 15, 0.8);
-    backdrop-filter: blur(10px);
-    -webkit-backdrop-filter: blur(10px);
-    padding: var(--fullscreen-padding);
-    position: sticky;
-    top: 0;
-    z-index: 100;
+	background: var(--card-background);
+	padding: var(--padding);
 }
-
-.header__container {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    max-width: var(--content-width);
-    margin: 0 auto;
-    gap: var(--spacing);
+.header__inner {
+	max-width: var(--content-width);
+	margin: 0 auto;
+	display: flex;
+	align-items: center;
+	gap: var(--spacing);
+	justify-content: center;
 }
-
-.header__brand {
-    display: flex;
-    align-items: center;
-    gap: var(--inner-gap);
-    text-decoration: none;
-    color: var(--foreground);
+h1 {
+	font-size: 28px;
 }
-
-.header__icon {
-    font-size: 28px;
-    color: var(--primary);
+.back-link {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	gap: var(--spacing);
+	color: var(--primary);
+	width: 32px;
+	height: 32px;
+	background-color: var(--background);
+	border-radius: 50%;
+	flex-shrink: 0;
 }
-
-.header__title {
-    font-size: 1.25rem;
-    font-weight: 700;
+.chapter-header {
+	display: flex;
+	flex-direction: row;
+	gap: var(--spacing);
+	align-items: center;
+	white-space: nowrap;
+}
+.chapter-number {
+	color: var(--primary);
+	flex-shrink: 0;
+}
+.chapter-title {
+	text-overflow: ellipsis;
+	overflow: hidden;
+	max-width: 100%;
 }
 </style>
