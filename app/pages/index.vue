@@ -12,16 +12,11 @@ onMounted(() => {
 
 <template>
 	<div class="home-page">
-		<h3 class="h3">Recently Viewed</h3>
-		<MangaScroll :items="store.recentManga" />
-		<h3 class="h3">Favorite Manga</h3>
-		<MangaScroll :items="store.favoriteManga" />
-		<h3 class="h3">Latest Updates</h3>
-		<MangaScroll :items="store.latestManga" />
-		<h3 class="h3">Newest Manga</h3>
-		<MangaScroll :items="store.newestManga" />
-		<h3 class="h3">Popular Picks</h3>
-		<MangaScroll :items="store.popularManga" />
+		<MangaScroll title="Recently Viewed" :items="store.recentManga" />
+		<MangaScroll title="Favorite Manga" :items="store.favoriteManga" />
+		<MangaScroll title="Latest Updates" :items="store.latestManga" />
+		<MangaScroll title="Newest Manga" :items="store.newestManga" />
+		<MangaScroll title="Popular Picks" :items="store.popularManga" />
 	</div>
 </template>
 
