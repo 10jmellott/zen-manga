@@ -47,8 +47,6 @@ h1 {
 	color: var(--primary);
 	width: 32px;
 	height: 32px;
-	background-color: var(--background);
-	border-radius: 50%;
 	flex-shrink: 0;
 }
 .chapter-header {

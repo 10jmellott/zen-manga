@@ -1,5 +1,6 @@
 <script lang="ts" setup>
 const store = useMangaStore();
+const layoutStore = useLayoutStore();
 const route = useRoute();
 
 function getChapterByOffset(offset: number) {
@@ -25,7 +26,8 @@ const nextChapter = computed(() => getChapterByOffset(1));
 </script>
 
 <template>
-    <div class="navigation glass">
+    <div class="navigation glass" v-if="layoutStore.isChapterRoute">
+		<div class="progress-bar" :style="{ width: `${layoutStore.pageProgress * 100}%` }"></div>
 		<NuxtLink v-if="nextChapter" :to="`/${store.currentManga?.id}/${nextChapter?.id}`" class="chapter-link">
 			Chapter {{ nextChapter?.chapter ?? '-' }}
 			<Icon name="mdi:arrow-right" />
@@ -46,5 +48,14 @@ const nextChapter = computed(() => getChapterByOffset(1));
 	color: var(--primary);
 	gap: var(--padding);
 	padding: var(--spacing);
+}
+.progress-bar {
+	position: absolute;
+	bottom: 0;
+	left: 0;
+	opacity: 0.5;
+	height: 3px;
+	background-color: var(--primary);
+	transition: width 0.1s ease-out;
 }
 </style>

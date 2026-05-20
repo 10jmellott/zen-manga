@@ -1,14 +1,15 @@
 <script lang="ts" setup>
 const layoutStore = useLayoutStore();
+layoutStore.initialize();
 </script>
 
 <template>
 	<div class="app">
 		<LayoutHeader class="header" :class="{ visible: layoutStore.showHeader }" />
-		<main class="content" :class="{ padded: layoutStore.addContentPadding }">
+		<main class="content" :class="{ padded: !layoutStore.isChapterRoute }">
 			<NuxtPage />
 		</main>
-		<LayoutNavigation class="navigation"  :class="{ visible: layoutStore.showNavigation }" />
+		<LayoutNavigation class="navigation" :class="{ visible: layoutStore.showNavigation }" />
 	</div>
 </template>
 

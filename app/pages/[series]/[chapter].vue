@@ -9,16 +9,10 @@ store.fetchMangaById(series);
 store.fetchChapterImagesById(chapter).then(() => {
 	userStore.markAsRead(series, chapter);
 });
-onMounted(() => {
-	layoutStore.addContentPadding = false;
-});
-onUnmounted(() => {
-	layoutStore.addContentPadding = true;
-});
 </script>
 
 <template>
-	<div class="chapter-page" :class="{ webcomic: store.isWebComic }">
+	<div class="chapter-page" :class="{ webcomic: store.isWebComic }" @click="layoutStore.toggleLayoutComponents">
 		<CoreLoaderImage
 			v-for="image in store.currentChapterImages"
 			:key="image"
