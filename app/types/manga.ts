@@ -18,3 +18,9 @@ export interface MangaChapter {
 	scanlationGroup?: string;
 	externalUrl?: string;
 }
+
+export interface MangaTag {
+	id: string;
+	name: string;
+	group: string;
+}

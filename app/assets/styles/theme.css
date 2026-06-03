@@ -39,6 +39,7 @@ select,
 button {
     font-display: auto;
     font-family: var(--font-stack);
+    color: var(--foreground);
 }
 
 html, body {
@@ -74,6 +75,12 @@ button {
     cursor: pointer;
     border: none;
     background: none;
+}
+
+.card {
+    background-color: var(--card-background);
+	border-radius: var(--border-radius);
+    overflow: hidden;
 }
 
 .muted {

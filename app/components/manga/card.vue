@@ -6,7 +6,7 @@ defineProps<{
 </script>
 
 <template>
-	<NuxtLink :to="`/${manga.id}`" class="manga-card">
+	<NuxtLink :to="`/${manga.id}`" class="manga-card card">
 		<img :src="manga.coverUrl" :alt="manga.title" class="cover" />
 		<div class="info">
 			<p class="body1">{{ manga.title }}</p>
@@ -18,9 +18,6 @@ defineProps<{
 <style scoped>
 .manga-card {
 	display: flex;
-	background-color: var(--card-background);
-	border-radius: var(--border-radius);
-	overflow: hidden;
 }
 
 img {

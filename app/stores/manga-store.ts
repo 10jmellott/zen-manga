@@ -1,4 +1,4 @@
-import type { Manga, MangaChapter } from "~/types/manga";
+import type { Manga, MangaChapter, MangaTag } from "~/types/manga";
 
 export const useMangaStore = defineStore('manga', {
 	state: () => ({
@@ -9,6 +9,7 @@ export const useMangaStore = defineStore('manga', {
 		latestManga: [] as Manga[],
 		popularManga: [] as Manga[],
 		newestManga: [] as Manga[],
+		searchResults: null as Manga[] | null
 	}),
 	getters: {
 		currentChapterGroups: (state) => {
@@ -137,6 +138,29 @@ export const useMangaStore = defineStore('manga', {
 			} catch (error) {
 				console.error(`Failed to fetch manga with id ${id}`, error);
 			}
+
+			try {
+				if (this.currentManga?.id === id) {
+					let offset = 0;
+					let [chapters, totalChapters] = await fetchMangaChaptersById(id, offset);
+					while (chapters.length < totalChapters) {
+						const [nextChapters, nextTotalChapters] = await fetchMangaChaptersById(id, chapters.length);
+						chapters.push(...nextChapters);
+						if (this.currentManga?.id !== id) {
+							// Manga was changed while loading chapters, stop loading more
+							break;
+						}
+						totalChapters = nextTotalChapters; // Just in case total chapters changed while loading (shouldn't happen, but better to be safe)
+					}
+
+					// Last check to make sure manga is still the same before updating chapters
+					if (this.currentManga?.id === id) {
+						this.currentManga.chapters = chapters;
+					}
+				}
+			} catch (err) {
+				console.error(`Failed to fetch chapters for manga with id ${id}`, err);
+			}
 		},
 		async fetchChapterImagesById(id: string) {
 			try {
@@ -145,6 +169,16 @@ export const useMangaStore = defineStore('manga', {
 				this.currentChapterImages = response;
 			} catch (error) {
 				console.error(`Failed to fetch chapter images with id ${id}`, error);
+			}
+		},
+		async searchManga(query: string, includedTags: MangaTag[] = [], excludedTags: MangaTag[] = []) {
+			try {
+				this.searchResults = null; // Clear current search results while loading new ones
+				const response = await searchManga(query, includedTags, excludedTags);
+				this.searchResults = response;
+			} catch (error) {
+				console.error(`Failed to search manga with query "${query}"`, error);
+				this.searchResults = [];
 			}
 		}
 	}

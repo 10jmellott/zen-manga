@@ -13,6 +13,8 @@ onMounted(() => {
 
 <template>
 	<div class="home-page">
+		<LayoutSearch />
+		<MangaScroll v-if="store.searchResults" title="Search Results" :items="store.searchResults" />
 		<MangaScroll v-if="userStore.recentSeries.length" title="Recently Viewed" :items="store.recentManga" />
 		<MangaScroll v-if="userStore.favoriteSeries.length" title="Favorite Manga" :items="store.favoriteManga" />
 		<MangaScroll title="Latest Updates" :items="store.latestManga" />

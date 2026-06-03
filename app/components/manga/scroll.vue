@@ -38,6 +38,7 @@ defineProps<{
 
 .item {
 	flex-shrink: 0;
+	flex-grow: 1;
 	width: 300px;
 	height: 140px;
 }

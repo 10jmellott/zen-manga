@@ -32,5 +32,6 @@ span {
 	border-radius: var(--border-radius);
 	font-size: 10px;
 	text-transform: lowercase;
+	white-space: nowrap;
 }
 </style>

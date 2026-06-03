@@ -7,9 +7,9 @@ defineProps<{
 
 <template>
 	<div class="tags">
+		<MangaTag :tag="manga.status" v-if="manga.status !== 'ongoing'"/>
 		<MangaTag :tag="manga.contentRating" v-if="manga.contentRating !== 'safe'" />
 		<MangaTag v-for="tag in manga.tags" :key="tag" :tag />
-		<MangaTag :tag="manga.status" />
 	</div>
 </template>
 
