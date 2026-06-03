@@ -1,86 +1,89 @@
 # Zen Manga
 
-Zen Manga is a lightweight manga app using the api.mangadex.org API. Leveraging this API we can serve the latest manga and its chapters quickly and efficiently.
+A minimalist, client-side manga reader built on [MangaDex](https://mangadex.org). Deployed as a Progressive Web App to GitHub Pages.
 
-This is a mobile-first webapp written with the Nuxt framework.
+## Features
+
+- Browse latest updates, newest additions, and popular picks from MangaDex
+- Search manga by title with tag-based filtering (genre, status, demographic, content rating)
+- Series detail pages with paginated chapter lists grouped by volume
+- Chapter reader with auto-hiding header/nav on scroll
+- Favorites and reading history stored locally (no account required)
+- Web Comic / Long Strip mode for vertical strip manga
 
 ## Tech Stack
 
-* **Runtime:** Nuxt (Vue), Pinia, Iconify, Vue Router
-* **Data Sources:** `api.mangadex.org`
-* **Deployment:** GitHub Actions, GitHub Pages
+- **[Nuxt 4](https://nuxt.com)** — SPA mode (SSR disabled), hash-based routing, deployed to GitHub Pages
+- **[Pinia](https://pinia.vuejs.org)** — state management
+- **[@vite-pwa/nuxt](https://vite-pwa-org.netlify.app/frameworks/nuxt)** — PWA support
+- **[MangaDex API](https://api.mangadex.org/docs/)** — manga data source
+- **Cloudflare Worker proxy** — CORS bypass for browser-to-MangaDex requests
 
-### API General Usage
+## Architecture
 
-Find the latest manga on the platform by using `/manga?includes[]=cover_art`. Each manga's cover art can be found under the `relationships` property for each manga where the `cover_art` is the `type`. This object should have an attributes property with a fileName property under that which is the cover-filename. From here the URL is `https://uploads.mangadex.org/covers/:manga-id/:cover-filename.256.jpg` which is a 256px wide cover image.
+```mermaid
+flowchart TD
+    Browser["Browser (SPA)"]
 
-After someone selects a manga get the chapter feed by using `/manga/8f0747c9-6a6c-490f-9f7e-90ebc9fe82c4/feed`. After a user selects a chapter the images for that chapter can be found under `/at-home/server/:chapter-id` where the property `chapter.dataSaver` is the array of chapters to use.
+    subgraph Pages
+        Home["/ — Home"]
+        Series["/:series — Series Detail"]
+        Chapter["/:series/:chapter — Reader"]
+    end
 
-### Development Guidelines
+    subgraph Stores
+        MangaStore["manga-store"]
+        UserStore["user-store\n(localStorage)"]
+        LayoutStore["layout-store"]
+    end
 
-* Use the theme definition colors in `/app/assets/styles/theme.css` as css variables
-* Use the styles from `/app/assets/styles/typography.css`
-* Add new css variables or font styles as needed instead of creating one-off colors or text styles in components
-* Create reusable components instead of one-off implementations. Put them in `/app/components/[category]/[component].vue` so they're automatically imported by Nuxt.
-* Use Iconify icons as much as possible. Those icons look like this: `<Icon name="mdi:book-open-blank-variant-outline" />`
-* Use the Pinia data stores in `/app/stores/*.ts` to manage app state and user data
-* Persist data in local storage to ensure the website behaves like an app
+    Proxy["Cloudflare Worker\n(CORS Proxy)"]
+    MangaDex["MangaDex API\napi.mangadex.org"]
+    CDN["MangaDex CDN\nuploads.mangadex.org"]
 
-## App Flow
+    Browser --> Pages
+    Pages --> MangaStore
+    Pages --> UserStore
+    Pages --> LayoutStore
+    MangaStore -->|"fetchWithProxy()"| Proxy
+    Proxy --> MangaDex
+    Proxy --> CDN
+```
 
-### 📂 I. Discovery & Browsing Pages (The Gateway)
+### API Layer (`app/utils/`)
+All MangaDex API calls go through `mangadex.ts`, which wraps every request in `fetchWithProxy` (`fetch-with-proxy.ts`). A Cloudflare Worker at `corsproxy.10jmellott.workers.dev` proxies all requests to bypass CORS — the browser cannot hit `api.mangadex.org` directly. Cover images and chapter pages are also routed through this proxy via `transformForProxy`.
 
-These pages are the primary entry points for new users.
+`mangadex.ts` handles the full transformation from raw MangaDex API shapes into the app's `Manga`, `MangaChapter`, and `MangaTag` types (defined in `app/types/manga.ts`). Raw Mangadex interfaces are defined privately at the bottom of that file and never leak out.
 
-#### 1. Homepage (/)
+### State Management (`app/stores/`)
+Three Pinia stores handle all app state:
 
-> Goal: Provide immediate content recommendations and set up the "sticky" personalized experience using client-side data. Core Content:
+| Store | Responsibility |
+|---|---|
+| `manga-store` | Fetched manga data: lists, current series, chapter images, search results. Paginates chapter fetching in batches of 100; skips re-fetching if the current manga ID already matches. |
+| `user-store` | All user state persisted to `localStorage`: recently read series (capped at 32), favorites, and per-series read chapter tracking (keyed as `read_<seriesId>`). |
+| `layout-store` | Header/nav visibility with scroll-based auto-hide. Only hides on chapter routes, after a 50px scroll delta. Initialized once in `app.vue`. |
 
-🔥 Quick Start / Continue Reading: (The most prominent element). If the user has previously visited the site (tracked via Local Storage), display the series and chapter they were last on. If no data, show a prompt: "New here? Explore our top genres!"
-Featured Carousel: High-profile titles or marketing spotlights.
-Curated Recommendation Feeds: Dynamic blocks based on immediate API data:
-✨ Trending Now: (High-velocity content).
-⭐ Favorites Showcase: A block showing titles that have been "favorited" by other users or the user in this session.
-📰 Recent Updates: Feed of new chapter releases across the catalog.
-Genre Quick Links: Visual links to the top 5-10 genres to guide exploration.
+### Routing (`app/pages/`)
+| Route | Page |
+|---|---|
+| `/` | Home — horizontal scrollable lists of latest/newest/popular/recent/favorite manga |
+| `/:series` | Series detail — cover, metadata, paginated chapter list grouped by volume |
+| `/:series/:chapter` | Chapter reader — vertical image strip; tapping anywhere toggles header/nav |
 
-#### 2. Genre/Category Browse Page (/genre/:genre-tag)
+Both params are MangaDex UUIDs. The app uses hash-based routing (`/#/...`) for GitHub Pages compatibility.
 
-> Goal: Deep filtering and organized content discovery. Core Content:
+### Layout (`app/app.vue`)
+The sticky header and bottom nav are always in the DOM. Visibility is toggled via CSS `opacity` and `pointer-events` (not `v-if`) to avoid layout reflow. On chapter routes the `.padded` class is removed from `<main>` so images fill edge-to-edge.
 
-Filtering Sidebar: Robust filter set (Genre, Demographic, Status, Tags).
-Genre Synopsis: Text describing the genre to help users decide.
-Title Grid: Visually appealing list of results. Each card is a self-contained entry providing: Title, Cover Art, Rating, and a prominent "Read Now" CTA.
+### Styling
+Global CSS variables live in `app/assets/styles/theme.css`. Key tokens: `--spacing` (16px), `--padding` (8px), `--border-radius` (8px), `--primary`, `--background`, `--card-background`, `--foreground`. Typography classes (`.h1`–`.h4`, `.body1`–`.body2`, `.caption1`–`.caption2`) are defined in `typography.css`. Global utility classes: `.muted`, `.glass`, `.card`, `.hide-scrollbar`, `.fade-animation`/`.fade`. Icons use `@nuxt/icon` (e.g. `<Icon name="fe:heart" />`).
 
-#### 3. Search Results Page (/search?q=query)
+## Development
 
-> Goal: Handling direct and specific lookups efficiently. Core Content:
+```bash
+pnpm install
+pnpm dev      # http://localhost:8086
+pnpm build    # GitHub Pages build
+```
 
-Search Bar: Active element for refining the query.
-Filtering Sidebar: Allows users to narrow down search results instantly.
-Results List/Grid: Clear, structured display of all matching titles.
-
-### 📖 II. Core Content Pages (The Consumption Loop)
-
-These pages are the engine of the app. The user must pass through these pages to read the content.
-
-#### 4. Series Information Page (/series/:series-id)
-
-> Goal: The ultimate source of truth for a title. Must convince the user to read. Content:
-
-Hero: Title, Author, Artist, Cover Art, Rating, Status.
-Synopsis: Detailed plot summary.
-Chapter Index: The master list. A clean, navigable, reverse-chronological list of all chapters. Each entry includes:
-Chapter Number and Title.
-Release Date.
-Crucial CTA: "Read Chapter X" (links to the Reader Page).
-Key Functionality: A simple "❤️ Favorite" button that saves the series ID to the user's local session state.
-
-#### 5. Chapter Reader Page (/series/:series-id/chapter/:chapter-id)
-
-> Goal: Deliver the images flawlessly in a distraction-free environment. Content:
-
-The Viewer: Primary focus. Optimized display of manga images.
-Navigation: Top/Bottom sticky bar with titles and easy access to "Previous Chapter" and "Next Chapter."
-UX Controls: Reading Mode selector (Dark/Light) and Zoom/Image quality settings.
-Session Tracking: When the user views this page, the client-side logic must immediately update the "Last Read" state.
