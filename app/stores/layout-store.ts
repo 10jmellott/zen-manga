@@ -29,7 +29,8 @@ export const useLayoutStore = defineStore('layout', {
 			let previousPageProgress = 0;
 
 			// On Route Change, reset scroll and progress
-			watch (() => useRoute(), () => {
+			const route = useRoute();
+			watch (() => route.path, () => {
 				window.scrollTo(0, 0);
 				this.pageProgress = 0;
 				previousPageProgress = 0;
