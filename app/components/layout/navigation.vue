@@ -38,7 +38,7 @@ const nextChapter = computed(() => getChapterByOffset(1));
 <style scoped>
 .navigation {
 	padding-bottom: 0;
-    padding-bottom: env(safe-area-inset-bottom, 0);
+    padding-bottom: 18px;
 }
 .chapter-link {
 	flex-grow: 1;
@@ -51,7 +51,7 @@ const nextChapter = computed(() => getChapterByOffset(1));
 }
 .progress-bar {
 	position: absolute;
-	bottom: 0;
+	top: 0;
 	left: 0;
 	opacity: 0.5;
 	height: 3px;

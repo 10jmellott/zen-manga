@@ -26,7 +26,7 @@ const currentChapter = computed(() => {
 <style scoped>
 .header {
 	background: var(--card-background);
-	padding: var(--padding);
+	padding: var(--spacing);
 }
 .header__inner {
 	max-width: var(--content-width);

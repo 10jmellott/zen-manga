@@ -33,7 +33,7 @@ layoutStore.initialize();
 	flex-grow: 1;
 	margin: 0 auto;
 	width: 100%;
-	padding-bottom: env(safe-area-inset-bottom, 20px);
+	padding-bottom: 18px;
 }
 .padded {
 	margin: var(--padding);
