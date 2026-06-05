@@ -5,6 +5,7 @@ layoutStore.initialize();
 
 <template>
 	<div class="app">
+		<VitePwaManifest />
 		<LayoutHeader class="header" :class="{ visible: layoutStore.showHeader }" />
 		<main class="content" :class="{ padded: !layoutStore.isChapterRoute }">
 			<NuxtPage />
