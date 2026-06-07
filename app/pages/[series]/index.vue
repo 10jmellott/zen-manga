@@ -8,6 +8,8 @@ store.fetchMangaById(series).then(() => {
 });
 const clamped = ref(true);
 
+const lastReadChapter = computed(() => userStore.lastReadChapterForSeries(series));
+
 function parseMarkdown(text: string) {
 	return text
 		.replace(/\n\n/g, '<br>')
@@ -27,10 +29,16 @@ function parseMarkdown(text: string) {
 			<img :src="store.currentManga?.coverUrl" :alt="store.currentManga?.title" class="cover" />
 			<MangaTags :manga="store.currentManga" />
 			<p class="muted" :class="{ clamped }" @click="clamped = !clamped" v-html="parseMarkdown(store.currentManga?.description)"></p>
-			<button @click="userStore.toggleFavorite(store.currentManga?.id)" :class="{ favorite: store.isFavoriteSeries }">
-				<Icon :name="store.isFavoriteSeries ? 'fe:heart' : 'fe:heart-o'" />
-				<span>{{ store.isFavoriteSeries ? 'Unfavorite' : 'Favorite' }}</span>
-			</button>
+			<div class="actions">
+				<button @click="userStore.toggleFavorite(store.currentManga?.id)" :class="{ favorite: store.isFavoriteSeries }">
+					<Icon :name="store.isFavoriteSeries ? 'fe:heart' : 'fe:heart-o'" />
+					<span>{{ store.isFavoriteSeries ? 'Unfavorite' : 'Favorite' }}</span>
+				</button>
+				<NuxtLink v-if="lastReadChapter" :to="`/${series}/${lastReadChapter.id}`" class="action-link continue">
+					<Icon name="mdi:play-circle-outline" />
+					<span>Continue Reading (Ch. {{ lastReadChapter.chapter }})</span>
+				</NuxtLink>
+			</div>
 		</div>
 		<CoreLoader v-else />
 		<div v-if="store.currentManga?.chapters?.length">
@@ -139,7 +147,14 @@ img {
 	flex-shrink: 0;
 	margin-left: auto;
 }
-button {
+.actions {
+	display: flex;
+	flex-wrap: wrap;
+	gap: var(--padding);
+	justify-content: center;
+}
+button,
+.action-link {
 	align-self: normal;
 	display: flex;
 	gap: var(--padding);
@@ -150,7 +165,8 @@ button {
 	color: var(--primary);
 	padding: var(--padding) var(--spacing);
 
-	&.favorite {
+	&.favorite,
+	&.continue {
 		background-color: var(--primary);
 		color: var(--foreground);
 	}

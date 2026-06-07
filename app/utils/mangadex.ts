@@ -94,6 +94,14 @@ export async function fetchMangaChaptersById(id: string, offset = 0, limit = 100
 	return [[], 0];
 }
 
+export async function fetchChapterById(id: string): Promise<MangaChapter | null> {
+	const chapter = await fetchMangadex<ChapterResponse>(`/chapter/${id}?includes[]=scanlation_group`);
+	if (chapter) {
+		return transformMangaChapter(chapter.data);
+	}
+	return null;
+}
+
 export async function fetchChapterImagesById(id: string): Promise<string[]> {
 	const response = await fetchMangadex<AtHomeResponse>(`/at-home/server/${id}`);
 	if (response) {
@@ -184,6 +192,10 @@ interface ChapterAttributes {
 
 interface MangaResponse {
 	data: MangadexManga;
+}
+
+interface ChapterResponse {
+	data: MangadexChapter;
 }
 
 interface MangadexCollection<T> {

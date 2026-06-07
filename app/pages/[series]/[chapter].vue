@@ -6,8 +6,9 @@ const route = useRoute();
 const series = route.params.series as string;
 const chapter = route.params.chapter as string;
 store.fetchMangaById(series);
-store.fetchChapterImagesById(chapter).then(() => {
-	userStore.markAsRead(series, chapter);
+store.fetchChapterImagesById(chapter).then(async () => {
+	const chapterInfo = await fetchChapterById(chapter);
+	userStore.markAsRead(series, chapter, chapterInfo?.chapter);
 });
 </script>
 
