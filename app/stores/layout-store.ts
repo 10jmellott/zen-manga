@@ -26,6 +26,7 @@ export const useLayoutStore = defineStore('layout', {
 		},
 		initialize() {
 			const navDelta = 50; // Minimum scroll delta to trigger hide/show in pixels
+			const bottomTolerance = 50; // Distance from bottom of page (in pixels) within which the nav re-appears
 			let previousPageProgress = 0;
 
 			// On Route Change, reset scroll and progress
@@ -45,7 +46,10 @@ export const useLayoutStore = defineStore('layout', {
 
 				// Update visibility if scroll has increased/decreased enough
 				if (this.isChapterRoute) {
-					if (this.pageProgress - previousPageProgress > navDelta / docHeight) {
+					if (docHeight - scrollTop <= bottomTolerance) {
+						this.showLayoutComponents();
+						previousPageProgress = this.pageProgress;
+					} else if (this.pageProgress - previousPageProgress > navDelta / docHeight) {
 						this.hideLayoutComponents();
 						previousPageProgress = this.pageProgress;
 					} else if (previousPageProgress - this.pageProgress > navDelta / docHeight) {
