@@ -3,14 +3,19 @@ const store = useMangaStore();
 const layoutStore = useLayoutStore();
 const route = useRoute();
 
-function getChapterByOffset(offset: number) {
+function getNextChapter() {
 	if (!route.params.chapter || !store.currentManga?.chapters) return null;
 	const chapterId = route.params.chapter as string;
 	const chapter = store.currentManga.chapters.find(c => c.id === chapterId);
 	if (!chapter) return null;
 	const currentChapterNumber = chapter.chapter;
-	const targetChapterNumber = currentChapterNumber + offset;
-	const targetChapter = store.currentManga.chapters.filter(c => c.chapter === targetChapterNumber);
+
+	// Decimal chapters (e.g. 7.1, 7.2) mean the "next" chapter isn't simply +1,
+	// so find the smallest chapter number that is greater than the current one.
+	const laterChapters = store.currentManga.chapters.filter(c => c.chapter > currentChapterNumber);
+	if (!laterChapters.length) return null;
+	const nextChapterNumber = Math.min(...laterChapters.map(c => c.chapter));
+	const targetChapter = laterChapters.filter(c => c.chapter === nextChapterNumber);
 	if (targetChapter.length > 1) {
 		// Try to match the current scanlation group if there are multiple chapters with the same chapter number
 		const currentScanlationGroup = chapter.scanlationGroup;
@@ -22,7 +27,7 @@ function getChapterByOffset(offset: number) {
 	return targetChapter[0] ?? null;
 }
 
-const nextChapter = computed(() => getChapterByOffset(1));
+const nextChapter = computed(() => getNextChapter());
 </script>
 
 <template>
@@ -30,6 +35,10 @@ const nextChapter = computed(() => getChapterByOffset(1));
 		<div class="progress-bar" :style="{ width: `${layoutStore.pageProgress * 100}%` }"></div>
 		<NuxtLink v-if="nextChapter" :to="`/${store.currentManga?.id}/${nextChapter?.id}`" class="chapter-link">
 			Chapter {{ nextChapter?.chapter ?? '-' }}
+			<Icon name="mdi:arrow-right" />
+		</NuxtLink>
+		<NuxtLink v-else :to="`/${store.currentManga?.id}`" class="chapter-link">
+			Return to series
 			<Icon name="mdi:arrow-right" />
 		</NuxtLink>
 	</div>
