@@ -1,8 +1,11 @@
 <script lang="ts" setup>
 import type { Manga } from '~/types/manga';
-defineProps<{
+const props = defineProps<{
 	manga: Manga;
 }>();
+
+const userStore = useUserStore();
+const lastReadChapter = computed(() => userStore.lastReadChapterForSeries(props.manga.id));
 </script>
 
 <template>
@@ -10,6 +13,7 @@ defineProps<{
 		<img :src="manga.coverUrl" :alt="manga.title" class="cover" />
 		<div class="info">
 			<p class="body1">{{ manga.title }}</p>
+			<p class="caption1 last-read" v-if="lastReadChapter">Last read: Ch. {{ lastReadChapter.chapter }}</p>
 			<MangaTags :manga />
 		</div>
 	</NuxtLink>
@@ -42,5 +46,9 @@ img {
 	-webkit-line-clamp: 2;
 	-webkit-box-orient: vertical;
 	overflow: hidden;
+}
+
+.last-read {
+	color: var(--primary);
 }
 </style>

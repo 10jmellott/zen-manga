@@ -2,8 +2,17 @@ function chaptersStorageKey(series: string): string {
 	return `read_${series}`;
 }
 
+function lastReadChapterStorageKey(series: string): string {
+	return `last_read_${series}`;
+}
+
 const recentlyReadSeriesKey = "recently_read_series";
 const favoriteSeriesKey = "favorite_series";
+
+export interface LastReadChapter {
+	id: string;
+	chapter: number;
+}
 
 function getReadChapters(series: string): Set<string> {
 	const chapters = new Set<string>();
@@ -25,6 +34,26 @@ function setReadChapter(series: string, chapterId: string) {
 		localStorage.setItem(chaptersStorageKey(series), JSON.stringify([...chapters]));
 	} catch (error) {
 		console.error("Failed to set read chapter to localStorage", error);
+	}
+}
+
+function getLastReadChapter(series: string): LastReadChapter | null {
+	try {
+		const storedValue = localStorage.getItem(lastReadChapterStorageKey(series));
+		if (storedValue) {
+			return JSON.parse(storedValue) as LastReadChapter;
+		}
+	} catch (error) {
+		console.error("Failed to get last read chapter from localStorage", error);
+	}
+	return null;
+}
+
+function setLastReadChapter(series: string, chapterId: string, chapter: number) {
+	try {
+		localStorage.setItem(lastReadChapterStorageKey(series), JSON.stringify({ id: chapterId, chapter } satisfies LastReadChapter));
+	} catch (error) {
+		console.error("Failed to set last read chapter to localStorage", error);
 	}
 }
 
@@ -93,13 +122,18 @@ export const useUserStore = defineStore('user', {
 		readChaptersForSeries: (state) => {
 			return getReadChapters(state.currentSeries || "");
 		},
-		
+		lastReadChapterForSeries: () => {
+			return (series: string) => getLastReadChapter(series);
+		},
 	},
 	actions: {
-		async markAsRead(series: string, chapterId: string) {
+		async markAsRead(series: string, chapterId: string, chapterNumber?: number) {
 			try {
 				console.log(`Marking chapter ${chapterId} of series ${series} as read`);
 				setReadChapter(series, chapterId);
+				if (chapterNumber !== undefined) {
+					setLastReadChapter(series, chapterId, chapterNumber);
+				}
 				this.recentSeries = addRecentlyReadSeries(series);
 				// Force update
 				const temp = this.currentSeries;
